@@ -1,0 +1,38 @@
+#CLI
+
+$kubectl autoscaling <deployment ou rs> <deployment name> —min=<min pod> —max=<max pod> —cp-percent=<number with percent>
+$kubectl autoscaling rs container-dpt —min=2 —max=5 —cpu-percent=80%             
+
+#Get HPA
+$kubectl get hpa
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: node-js-deploy
+spec:
+  minReplicas: 3
+  maxReplicas: 6
+  scaleTargetRef:
+  apiVersion: v1
+    kind: Deployment
+    name: node-js-deploy
+  targetCPUUtilizationPercentage: 10
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: boomload-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: loadgenerator-deploy
+    spec:
+      containers:
+        - image: williamyeh/boom
+          name: boom-deploy
+          command: ["/bin/sh","-c"]
+          args: ["while true ; do boom http://node-js-deploy/ -c 10 -n100 ; sleep 1 ;"]
+

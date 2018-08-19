@@ -1,0 +1,32 @@
+#Changing the namespace
+$ kubectl config set-context $($kubectl config current- context) --namespace
+
+#Query in resources
+$ Kubectl get pod <mypod> -o jsonpath —template={.key.subkey}
+$ Kubectl get pod <mypod> -o jsonpath —template={.status.podIP}
+
+#DELETE
+
+#Delete POD
+$ Kubectl delete pod <pod_name>
+
+#Delete deployment
+$ Kubectl delete deployment <deployment_name>
+
+#Delete deployment without delete pod
+$ Kubectl delete deployment <deployment_name> —cascade=false
+
+
+#LABELS
+#Add a label
+$ Kubectl label pods mypod env=prod
+
+#Delete label
+$ Kubectl label pods mypod -env
+
+# Copy files to container and Container to local
+#Copy container to local
+$ Kubectl cp mypod:/path/file /destpath/file
+
+#Copy local to container
+$ Kubectl cp /path/file  mypod:/destpath/file

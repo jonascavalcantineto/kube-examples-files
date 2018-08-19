@@ -1,0 +1,2 @@
+#Force Delete POD
+$kubectl delete pods <unknown pods name> --grace-period=0 —force

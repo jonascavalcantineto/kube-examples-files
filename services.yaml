@@ -1,0 +1,53 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+
+#Example Multi-Port
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 9376
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 9377
+
+#Example NodePort
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-example
+spec:
+  selector:
+    app: example-app
+  ports:
+    - protocol: TCP
+      port: 5432
+      nodePort: 5432
+      targetPort: 5432
+  type: NodePort
+
+#Example External Name
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-service
+  namespace: prod
+spec:
+  type: ExternalName
+  externalName: my.database.example.com
+
