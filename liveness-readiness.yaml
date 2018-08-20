@@ -1,11 +1,36 @@
+
+#TCP
 readinessProbe:
   tcpSocket:
-  port: 8080
-  initialDelaySeconds: 5
-  periodSeconds: 10
+    port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+
+
+#Leaveness Examples
 
 livenessProbe:
+#TCP
   tcpSocket:
-  port: 8080
-  initialDelaySeconds: 15
-  periodSeconds: 20
+    port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 20
+#HTTP
+  httpGet:
+    path: /
+    port: 8080
+
+apiVersion: v1
+kind: pod
+metadata:
+  name: kubia-liveness
+spec:
+  containers:
+    - image: luksa/kubia-unhealthy
+      name: kubia
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 15
