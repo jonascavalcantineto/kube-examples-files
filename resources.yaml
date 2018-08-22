@@ -16,9 +16,9 @@ spec:
       containers:
         - name: node-js-constraints
           image: jonbaier/node-express-info:latest
-        ports:
-          - containerPort: 80
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "1500m”
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "1500m"

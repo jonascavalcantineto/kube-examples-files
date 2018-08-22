@@ -1,19 +1,105 @@
-kind: ConfigMap
+#Create ConfigMaps from directories
+mkdir -p configure-pod-container/configmap/kubectl/
+wget https://k8s.io/docs/tasks/configure-pod-container/configmap/kubectl/game.properties -O configure-pod-container/configmap/kubectl/game.properties
+wget https://k8s.io/docs/tasks/configure-pod-container/configmap/kubectl/ui.properties -O configure-pod-container/configmap/kubectl/ui.properties
+kubectl create configmap game-config --from-file=configure-pod-container/configmap/kubectl/
+
+kubectl describe configmaps game-config
+Name:           game-config
+Namespace:      default
+Labels:         <none>
+Annotations:    <none>
+
+Data
+====
+game.properties:        158 bytes
+ui.properties:          83 bytes
+
+kubectl get configmaps game-config -o yaml
 apiVersion: v1
+data:
+  game.properties: |
+    enemies=aliens
+    lives=3
+    enemies.cheat=true
+    enemies.cheat.level=noGoodRotten
+    secret.code.passphrase=UUDDLRLRBABAS
+    secret.code.allowed=true
+    secret.code.lives=30
+  ui.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+    how.nice.to.look=fairlyNice
+kind: ConfigMap
 metadata:
-    name: example-config
+  creationTimestamp: 2016-02-18T18:52:05Z
+  name: game-config
+  namespace: default
+  resourceVersion: "516"
+  selfLink: /api/v1/namespaces/default/configmaps/game-config
+  uid: b4952dc3-d670-11e5-8cd0-68f728db1985
+
+#Create ConfigMaps from files
+kubectl create configmap game-config-2 --from-file=configure-pod-container/configmap/kubectl/game.properties
+
+kubectl describe configmaps game-config-2
+Name:           game-config-2
+Namespace:      default
+Labels:         <none>
+Annotations:    <none>
+
+Data
+====
+game.properties:        158 bytes
+
+#Create ConfigMaps from literal values
+
+kubectl create configmap special-config --from-literal=special.how=very --from-literal=special.type=charm
+
+kubectl get configmaps special-config -o yaml
+apiVersion: v1
+data:
+  special.how: very
+  special.type: charm
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-02-18T19:14:38Z
+  name: special-config
+  namespace: default
+  resourceVersion: "651"
+  selfLink: /api/v1/namespaces/default/configmaps/special-config
+  uid: dadce046-d673-11e5-8cd0-68f728db1985
+
+
+#Configure all key-value pairs in a ConfigMap as container environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: special-config
     namespace: default
 data:
-# example of a simple property defined using --from-literal
-    example.property.1: hello
-    example.property.2: world
+    SPECIAL_LEVEL: very
+    SPECIAL_TYPE: charm
 
-# example of a complex property defined using --from-file
-example.property.file:
-property.1=value-1
-property.2=value-2
-property.3=value-3
+#Define a container environment variable with data from a single ConfigMap
 
-#COMANDS
-$ kubectl create configmap game-config-3 --from-file=game-special-key=docs/user-guide/configmap/kubectl/game.properties
-$ kubectl get configmaps game-config-3 -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+    name: dapi-test-pod
+spec:
+    containers:
+    - name: test-container
+        image: k8s.gcr.io/busybox
+        command: [ "/bin/sh", "-c", "env" ]
+        env:
+        # Define the environment variable
+        - name: SPECIAL_LEVEL_KEY
+            valueFrom:
+            configMapKeyRef:
+                # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: special-config
+                # Specify the key associated with the value
+                key: special.how
+    restartPolicy: Never
