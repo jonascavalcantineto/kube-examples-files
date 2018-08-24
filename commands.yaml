@@ -21,6 +21,12 @@ $ Kubectl delete deployment <deployment_name> —cascade=false
 #Add a label
 $ Kubectl label pods mypod env=prod
 
+#Change the label
+kubectl label pod mypod app=foo --overwrite
+
+#Show label of the specify pod
+kubectl get pods -L app
+
 #Delete label
 $ Kubectl label pods mypod -env
 
